@@ -9,17 +9,14 @@
 ## Usage
 
 Chatter's main usage is, of course, allowing chat to play video games like Pokemon by themselves, but it can also be
-used for other purposes. In order to start using Chatter, you will need to clone the repository.
+used for other purposes.
 
-After cloning the repository, run the `main` method in the `Chatter` class.
+In order to start using Chatter, you will need to clone the repository and run the `main` method in the `Chatter` class.
 
-You will need a Twitch account and an OAuth token to use the application. You can generate an OAuth token
-[here](https://twitchapps.com/tmi/).
-
-After inputting your OAuth token and the channel you want to listen to, you can start sending messages to the chat
+After inputting your **[OAuth Token](https://twitchapps.com/tmi/)**  and the channel you want to listen to, you can start sending messages to the chat
 and the application will translate them into key presses.
 
-The application will only send inputs if the active window is of the allowed window titles. You can modify the allowed
+Chatter will only send inputs if the active window is of the allowed window titles. You can modify the allowed
 window titles in the `ALLOWED_WINDOW_TITLES` list in the main class.
 
 All of Chatter's inputs can be modified in the `ALLOWED_INPUTS` list in the main class. Note: the inputs are
