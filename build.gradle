@@ -1,0 +1,105 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'maven-publish'
+    id 'java'
+}
+
+group = 'net.foulest'
+version = '1.0.0'
+description = project.name
+
+compileJava.options.encoding = 'UTF-8'
+java.sourceCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    // Maven repositories
+    mavenCentral()
+    mavenLocal()
+
+    // Local libraries
+    flatDir {
+        dirs 'libs'
+    }
+
+    maven {
+        url 'https://jitpack.io'
+        name 'JitPack'
+    }
+}
+
+dependencies {
+    // Logback Classic - for logging; needed by Twitch4J
+    // Note: keep this version at 1.3.14 to avoid conflicts with Java 9+ modules
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.14'
+
+    // Twitch4J - for interacting with the Twitch API
+    // https://github.com/twitch4j/twitch4j
+    implementation group: 'com.github.twitch4j', name: 'twitch4j', version: '1.19.0'
+
+    // Events4J - for handling events
+    // https://github.com/PhilippHeuer/events4j
+    implementation group: 'com.github.philippheuer.events4j', name: 'events4j-handler-reactor', version: '0.12.1'
+
+    // JNA platform - for interacting with native libraries
+    // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+
+    // JetBrains Annotations - for code inspection and documentation
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    compileOnly group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+
+    // Lombok - for reducing boilerplate code
+    // https://projectlombok.org
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.30'
+}
+
+tasks {
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+        enableRelocation = true
+        relocationPrefix = "net.foulest.chatter.shaded"
+        minimize()
+    }
+
+    compileJava {
+        dependsOn(clean)
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
+    processResources {
+        filesMatching('**/*.yml') {
+            filter { line ->
+                line.replace('${project.version}', project.version)
+            }
+        }
+    }
+
+    tasks.register('sourceJar', Jar) {
+        from sourceSets.main.allJava
+    }
+
+    jar.configure {
+        archiveClassifier = 'default'
+    }
+
+    shadowJar.configure {
+        archiveClassifier = null
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "net.foulest.chatter"
+            artifactId = project.name
+            version = project.version
+
+            from components.java
+        }
+    }
+}
