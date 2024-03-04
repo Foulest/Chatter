@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
     id 'java'
 }
@@ -56,19 +55,8 @@ dependencies {
 }
 
 tasks {
-    shadowJar {
-        archiveFileName.set("${project.name}-${project.version}.jar")
-        enableRelocation = true
-        relocationPrefix = "net.foulest.chatter.shaded"
-        minimize()
-    }
-
     compileJava {
         dependsOn(clean)
-    }
-
-    build {
-        dependsOn(shadowJar)
     }
 
     processResources {
@@ -85,10 +73,6 @@ tasks {
 
     jar.configure {
         archiveClassifier = 'default'
-    }
-
-    shadowJar.configure {
-        archiveClassifier = null
     }
 }
 
