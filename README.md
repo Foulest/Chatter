@@ -19,8 +19,8 @@ class. After that, Chatter will start listening to chat and sending inputs to th
 (and only the active window).
 
 Chatter supports case-sensitive inputs for chatters to specify input duration: **uppercase** messages hold buttons down
-for one second and doubles mouse movement distance; **lowercase** messages press buttons once and moves half the
-distance.
+for one second and doubles mouse movement distance; **lowercase** messages press buttons once and moves the mouse at
+half the distance.
 
 ## Getting Help
 
