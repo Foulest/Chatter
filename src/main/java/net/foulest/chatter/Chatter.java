@@ -329,15 +329,18 @@ public class Chatter {
                 WinDef.RECT rect = new WinDef.RECT();
 
                 if (MyUser32.INSTANCE.GetWindowRect(MyUser32.INSTANCE.GetForegroundWindow(), rect)) {
-                    // Window boundaries
-                    int minX = rect.left;
-                    int maxX = rect.right;
-                    int minY = rect.top;
-                    int maxY = rect.bottom;
+                    // Define the boundaries of the window
+                    // This is used to ensure the mouse stays within the window's boundaries
+                    int buffer = 10;
+                    int minX = rect.left + buffer;
+                    int maxX = rect.right - buffer;
+                    int minY = rect.top + buffer;
+                    int maxY = rect.bottom - buffer;
 
                     Point currentPosition = MouseInfo.getPointerInfo().getLocation();
                     int x = currentPosition.x;
                     int y = currentPosition.y;
+
                     final int movementDistance = 10; // Customize this value as needed
                     int duration = longInput ? 500 : 250; // Duration in milliseconds
                     long endTime = System.currentTimeMillis() + duration;
@@ -364,7 +367,10 @@ public class Chatter {
                         x = Math.max(minX, Math.min(x, maxX));
                         y = Math.max(minY, Math.min(y, maxY));
 
+                        // Moves the mouse
                         robot.mouseMove(x, y);
+
+                        // Sleep for a short duration to prevent the mouse from moving too quickly
                         Thread.sleep(25);
                     }
                 }
