@@ -80,7 +80,7 @@ public class Chatter {
 
         // Minecraft
         APPLICATIONS.add(new Application("Minecraft",
-                Arrays.asList("Minecraft", "Cinnamon", "Lunar Client"),
+                Arrays.asList("Minecraft", "Cinnamon", "Lunar Client", "Badlion Client"),
                 Arrays.asList(
                         new KeyInput("W", KeyEvent.VK_W),
                         new KeyInput("A", KeyEvent.VK_A),
