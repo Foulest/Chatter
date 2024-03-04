@@ -12,12 +12,18 @@ import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import net.foulest.chatter.input.Input;
+import net.foulest.chatter.input.type.KeyInput;
+import net.foulest.chatter.input.type.MouseInput;
+import net.foulest.chatter.util.Application;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Main class for Chatter.
@@ -28,32 +34,82 @@ import java.util.*;
 @Slf4j(topic = "Chatter")
 public class Chatter {
 
-    public static long lastInput = System.currentTimeMillis();
-    public static Thread inputThread = null;
+    public static long lastKeyInput = System.currentTimeMillis();
+    public static Thread keyInputThread = null;
 
-    public static final long LONG_INPUT_DURATION = 1000L; // Duration of long inputs in milliseconds
-    public static final long SHORT_INPUT_DURATION = 200L; // Duration of short inputs in milliseconds
+    public static long lastMouseInput = System.currentTimeMillis();
+    public static Thread mouseInputThread = null;
 
-    public static final Map<String, Integer> ALLOWED_INPUTS = new LinkedHashMap<>();
-    public static final List<String> ALLOWED_WINDOW_TITLES = new ArrayList<>();
+    // List of applications to monitor and translate inputs for
+    public static final List<Application> APPLICATIONS = new ArrayList<>();
 
     static {
-        ALLOWED_INPUTS.put("UP", KeyEvent.VK_UP); // Forward
-        ALLOWED_INPUTS.put("DOWN", KeyEvent.VK_DOWN); // Backward
-        ALLOWED_INPUTS.put("LEFT", KeyEvent.VK_LEFT); // Left
-        ALLOWED_INPUTS.put("RIGHT", KeyEvent.VK_RIGHT); // Right
-        ALLOWED_INPUTS.put("X", KeyEvent.VK_A); // X Button
-        ALLOWED_INPUTS.put("Y", KeyEvent.VK_S); // Y Button
-        ALLOWED_INPUTS.put("A", KeyEvent.VK_Z); // A Button
-        ALLOWED_INPUTS.put("B", KeyEvent.VK_X); // B Button
-        ALLOWED_INPUTS.put("START", KeyEvent.VK_ENTER); // Start Button
-        ALLOWED_INPUTS.put("SELECT", KeyEvent.VK_BACK_SPACE); // Select Button
+        // DeSmuME (DS Emulator)
+        APPLICATIONS.add(new Application("DS Emulators (DeSmuME, Citra, etc.)",
+                Arrays.asList("DeSmuME", "Citra"),
+                Arrays.asList(
+                        new KeyInput("UP", KeyEvent.VK_UP),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT),
+                        new KeyInput("X", KeyEvent.VK_A),
+                        new KeyInput("Y", KeyEvent.VK_S),
+                        new KeyInput("A", KeyEvent.VK_Z),
+                        new KeyInput("B", KeyEvent.VK_X),
+                        new KeyInput("L", KeyEvent.VK_Q),
+                        new KeyInput("R", KeyEvent.VK_W),
+                        new KeyInput("START", KeyEvent.VK_ENTER),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE)
+                )));
 
-        ALLOWED_WINDOW_TITLES.add("DeSmuME"); // DS Emulator
+        // mGBA (GBA Emulator)
+        APPLICATIONS.add(new Application("Gameboy Emulators (mGBA, etc.)",
+                Arrays.asList("mGBA", "Visual Boy Advance"),
+                Arrays.asList(
+                        new KeyInput("UP", KeyEvent.VK_UP),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT),
+                        new KeyInput("A", KeyEvent.VK_Z),
+                        new KeyInput("B", KeyEvent.VK_X),
+                        new KeyInput("L", KeyEvent.VK_A),
+                        new KeyInput("R", KeyEvent.VK_S),
+                        new KeyInput("START", KeyEvent.VK_ENTER),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE)
+                )));
+
+        // Minecraft
+        APPLICATIONS.add(new Application("Minecraft",
+                Arrays.asList("Minecraft", "Cinnamon", "Lunar Client"),
+                Arrays.asList(
+                        new KeyInput("W", KeyEvent.VK_W),
+                        new KeyInput("A", KeyEvent.VK_A),
+                        new KeyInput("S", KeyEvent.VK_S),
+                        new KeyInput("D", KeyEvent.VK_D),
+                        new KeyInput("SPACE", KeyEvent.VK_SPACE),
+                        new KeyInput("SHIFT", KeyEvent.VK_SHIFT),
+                        new KeyInput("E", KeyEvent.VK_E),
+                        new KeyInput("Q", KeyEvent.VK_Q),
+                        new KeyInput("1", KeyEvent.VK_1),
+                        new KeyInput("2", KeyEvent.VK_2),
+                        new KeyInput("3", KeyEvent.VK_3),
+                        new KeyInput("4", KeyEvent.VK_4),
+                        new KeyInput("5", KeyEvent.VK_5),
+                        new KeyInput("6", KeyEvent.VK_6),
+                        new KeyInput("7", KeyEvent.VK_7),
+                        new KeyInput("8", KeyEvent.VK_8),
+                        new KeyInput("9", KeyEvent.VK_9),
+                        new KeyInput("LEFT CLICK", InputEvent.BUTTON1_DOWN_MASK),
+                        new KeyInput("RIGHT CLICK", InputEvent.BUTTON2_DOWN_MASK),
+                        new MouseInput("LEFT", MouseInput.Direction.LEFT),
+                        new MouseInput("RIGHT", MouseInput.Direction.RIGHT),
+                        new MouseInput("UP", MouseInput.Direction.UP),
+                        new MouseInput("DOWN", MouseInput.Direction.DOWN)
+                )));
     }
 
     public static void main(String[] args) {
-        System.out.println("Starting Chatter...");
+        System.out.println("\nStarting Chatter...");
 
         // Asks the user for their Twitch OAuth token.
         // This is used to authenticate the bot with Twitch.
@@ -83,6 +139,40 @@ public class Chatter {
             return;
         }
 
+        // Asks the user for the application they want to monitor.
+        // This is the application the bot will translate inputs for.
+        System.out.println("\nSupported Applications:");
+        for (int i = 0; i < APPLICATIONS.size(); i++) {
+            System.out.println((i + 1) + ". " + APPLICATIONS.get(i).name);
+        }
+        System.out.print("\nEnter the application # you want to monitor: ");
+
+        String appName = scanner.nextLine().trim();
+        Application application;
+
+        // Check if the input is numeric
+        if (appName.matches("\\d+")) {
+            int index = Integer.parseInt(appName) - 1;
+
+            if (index >= 0 && index < APPLICATIONS.size()) {
+                application = APPLICATIONS.get(index);
+            } else {
+                application = null;
+            }
+        } else {
+            // Treat the input as an application name
+            application = APPLICATIONS.stream()
+                    .filter(app -> app.name.equalsIgnoreCase(appName))
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        // Validates the application name.
+        if (application == null) {
+            log.warn("Invalid application name. It must be one of the applications listed above.");
+            return;
+        }
+
         // Sets up the Twitch client.
         System.out.println();
         log.info("Setting up the Twitch client...");
@@ -104,7 +194,8 @@ public class Chatter {
 
         synchronized (chat) {
             chat.sendMessage(channel, "[Chatter] Input monitoring is enabled!");
-            chat.sendMessage(channel, "Valid inputs: " + String.join(", ", ALLOWED_INPUTS.keySet())
+            chat.sendMessage(channel, "Valid inputs: " + application.getInputs().stream()
+                    .map(Input::getInputName).collect(Collectors.joining(", "))
                     + " (Note: Uppercase inputs hold the button down for one"
                     + " second; lowercase inputs press the button once.)"
             );
@@ -115,27 +206,33 @@ public class Chatter {
         eventManager.onEvent(IRCMessageEvent.class, event -> event.getMessage().ifPresent(message -> {
             String trimmedMessage = message.trim();
 
-            for (Map.Entry<String, Integer> entry : ALLOWED_INPUTS.entrySet()) {
-                String input = entry.getKey();
+            for (Input inputs : application.getInputs()) {
+                String input = inputs.getInputName();
 
                 // Check if the trimmed message matches any allowed input (case-insensitive)
                 if (trimmedMessage.equalsIgnoreCase(input)) {
-                    boolean longInput = trimmedMessage.equals(input);
-                    String inputType = longInput ? "long" : "short";
+                    boolean isLongInput = trimmedMessage.equals(input);
+                    String inputType = isLongInput ? "long" : "short";
+
                     log.info("Received " + inputType + " input: " + message);
 
                     // Check if the current window title is allowed
                     String windowTitle = getForegroundWindowText();
-                    if (windowTitle == null || ALLOWED_WINDOW_TITLES.stream().noneMatch(windowTitle::contains)) {
+                    if (windowTitle == null || application.getWindowTitles().stream().noneMatch(windowTitle::contains)) {
                         log.info("Ignoring " + inputType + " input due to invalid window title: " + windowTitle);
                         return;
                     }
 
-                    // If all checks pass, press the key
+                    // If all checks pass, start the input
                     log.info("Inputting " + inputType + " input: " + message);
-                    startKeyPress(entry.getValue(), longInput);
 
-                    // Since a match was found, no need to continue checking other inputs
+                    if (inputs instanceof KeyInput) {
+                        KeyInput keyInput = (KeyInput) inputs;
+                        startKeyInput(keyInput.getKeyCode(), isLongInput);
+                    } else {
+                        MouseInput mouseInput = (MouseInput) inputs;
+                        startMouseInput(mouseInput.getDirection(), isLongInput);
+                    }
                     break;
                 }
             }
@@ -145,41 +242,49 @@ public class Chatter {
     }
 
     /**
-     * Starts a key press.
+     * Starts a key input.
      *
      * @param keyCode   The key code to press.
      * @param longInput Whether the input is long or short.
      */
     @Synchronized
-    public static void startKeyPress(int keyCode, boolean longInput) {
+    public static void startKeyInput(int keyCode, boolean longInput) {
         // Update the lastInput timestamp
-        lastInput = System.currentTimeMillis();
+        lastKeyInput = System.currentTimeMillis();
 
         // If there is an ongoing input, interrupt it
-        if (inputThread != null && inputThread.isAlive()) {
-            inputThread.interrupt();
+        if (keyInputThread != null && keyInputThread.isAlive()) {
+            keyInputThread.interrupt();
         }
 
         // Create a new thread for the new input
-        inputThread = new Thread(() -> {
+        keyInputThread = new Thread(() -> {
             try {
                 Robot robot = new Robot();
+                boolean mouseInput = keyCode == InputEvent.BUTTON1_DOWN_MASK || keyCode == InputEvent.BUTTON2_DOWN_MASK;
 
-                // Press the key
-                robot.keyPress(keyCode);
+                // Press the key (or mouse button)
+                if (mouseInput) {
+                    robot.mousePress(keyCode);
+                } else {
+                    robot.keyPress(keyCode);
+                }
 
                 // Sleep for the input duration
                 if (longInput) {
-                    Thread.sleep(LONG_INPUT_DURATION);
+                    Thread.sleep(1000L);
                 } else {
-                    Thread.sleep(SHORT_INPUT_DURATION);
+                    Thread.sleep(200L);
                 }
 
-                // Release the key
-                robot.keyRelease(keyCode);
+                // Release the key (or mouse button)
+                if (mouseInput) {
+                    robot.mouseRelease(keyCode);
+                } else {
+                    robot.keyRelease(keyCode);
+                }
             } catch (InterruptedException e) {
-                // If the sleep is interrupted, ensure the key is released
-                System.out.println("Interrupted: Releasing key early.");
+                System.out.println("Interrupted: Releasing key press early.");
 
                 try {
                     Robot robot = new Robot();
@@ -193,7 +298,63 @@ public class Chatter {
         });
 
         // Start the new input thread
-        inputThread.start();
+        keyInputThread.start();
+    }
+
+    /**
+     * Starts a mouse input.
+     *
+     * @param direction The direction to move the mouse in.
+     * @param longInput Whether the input is long or short.
+     */
+    @SuppressWarnings("BusyWait")
+    @Synchronized
+    public static void startMouseInput(MouseInput.Direction direction, boolean longInput) {
+        // Update the lastInput timestamp
+        lastMouseInput = System.currentTimeMillis();
+
+        // If there is an ongoing input, interrupt it
+        if (mouseInputThread != null && mouseInputThread.isAlive()) {
+            mouseInputThread.interrupt();
+        }
+
+        // Create a new thread for the new input
+        mouseInputThread = new Thread(() -> {
+            try {
+                Robot robot = new Robot();
+                Point currentPosition = MouseInfo.getPointerInfo().getLocation();
+                int x = currentPosition.x;
+                int y = currentPosition.y;
+                final int movementDistance = 10; // Customize this value as needed
+                int duration = longInput ? 500 : 250; // Duration in milliseconds
+                long endTime = System.currentTimeMillis() + duration;
+
+                while (System.currentTimeMillis() < endTime) {
+                    switch (direction) {
+                        case UP:
+                            y -= movementDistance;
+                            break;
+                        case DOWN:
+                            y += movementDistance;
+                            break;
+                        case LEFT:
+                            x -= movementDistance;
+                            break;
+                        case RIGHT:
+                            x += movementDistance;
+                            break;
+                    }
+
+                    robot.mouseMove(x, y);
+                    Thread.sleep(25);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+
+        // Start the new input thread
+        mouseInputThread.start();
     }
 
     /**

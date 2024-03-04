@@ -14,13 +14,13 @@ used for other purposes.
 In order to start using Chatter, you will need to clone the repository and run the `main` method in the `Chatter` class.
 
 After inputting your **[OAuth Token](https://twitchapps.com/tmi/)** and the channel you want to listen to, Chatter will
-start listening to chat and sending inputs to the active window.
+ask you to select one of the supported applications. These are customizable in the `APPLICATIONS` list in the main
+class. After that, Chatter will start listening to chat and sending inputs to the application's active window
+(and only the active window).
 
-All of Chatter's inputs are case-sensitive and can be modified in the `ALLOWED_INPUTS` list in the main class.
-Uppercase messages hold the button down for one second; lowercase messages press the button once.
-
-Chatter will only send inputs if the active window is of the allowed window titles. You can modify the allowed
-window titles in the `ALLOWED_WINDOW_TITLES` list in the main class.
+Chatter supports case-sensitive inputs for chatters to specify input duration: **uppercase** messages hold buttons down
+for one second and doubles mouse movement distance; **lowercase** messages press buttons once and moves half the
+distance.
 
 ## Getting Help
 
