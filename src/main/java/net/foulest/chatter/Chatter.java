@@ -105,10 +105,10 @@ public class Chatter {
                         new KeyInput("MOUSE1", InputEvent.BUTTON1_DOWN_MASK, 200, 1000),
                         new KeyInput("MOUSE2", InputEvent.BUTTON2_DOWN_MASK, 200, 1000),
                         new KeyInput("MOUSE3", InputEvent.BUTTON3_DOWN_MASK, 200, 1000),
-                        new MouseInput("LEFT", MouseInput.Direction.LEFT, 500, 1000),
-                        new MouseInput("RIGHT", MouseInput.Direction.RIGHT, 500, 1000),
-                        new MouseInput("UP", MouseInput.Direction.UP, 500, 1000),
-                        new MouseInput("DOWN", MouseInput.Direction.DOWN, 500, 1000)
+                        new MouseInput("LEFT", MouseInput.Direction.LEFT, 250, 500),
+                        new MouseInput("RIGHT", MouseInput.Direction.RIGHT, 250, 500),
+                        new MouseInput("UP", MouseInput.Direction.UP, 250, 500),
+                        new MouseInput("DOWN", MouseInput.Direction.DOWN, 250, 500)
                 )));
     }
 
