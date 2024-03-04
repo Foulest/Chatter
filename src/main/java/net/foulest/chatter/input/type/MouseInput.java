@@ -12,6 +12,8 @@ public class MouseInput extends Input {
 
     public String inputName;
     public Direction direction;
+    public long shortDuration;
+    public long longDuration;
 
     public enum Direction {
         LEFT,

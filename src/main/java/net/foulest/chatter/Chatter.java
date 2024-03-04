@@ -50,65 +50,65 @@ public class Chatter {
         APPLICATIONS.add(new Application("DS Emulators (DeSmuME, Citra, etc.)",
                 Arrays.asList("DeSmuME", "Citra"),
                 Arrays.asList(
-                        new KeyInput("UP", KeyEvent.VK_UP),
-                        new KeyInput("DOWN", KeyEvent.VK_DOWN),
-                        new KeyInput("LEFT", KeyEvent.VK_LEFT),
-                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT),
-                        new KeyInput("X", KeyEvent.VK_A),
-                        new KeyInput("Y", KeyEvent.VK_S),
-                        new KeyInput("A", KeyEvent.VK_Z),
-                        new KeyInput("B", KeyEvent.VK_X),
-                        new KeyInput("L", KeyEvent.VK_Q),
-                        new KeyInput("R", KeyEvent.VK_W),
-                        new KeyInput("START", KeyEvent.VK_ENTER),
-                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE)
+                        new KeyInput("UP", KeyEvent.VK_UP, 200, 1000),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 200, 1000),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 200, 1000),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 200, 1000),
+                        new KeyInput("X", KeyEvent.VK_A, 200, 1000),
+                        new KeyInput("Y", KeyEvent.VK_S, 200, 1000),
+                        new KeyInput("A", KeyEvent.VK_Z, 200, 1000),
+                        new KeyInput("B", KeyEvent.VK_X, 200, 1000),
+                        new KeyInput("L", KeyEvent.VK_Q, 200, 1000),
+                        new KeyInput("R", KeyEvent.VK_W, 200, 1000),
+                        new KeyInput("START", KeyEvent.VK_ENTER, 200, 1000),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 200, 1000)
                 )));
 
         // Gameboy Emulators
         APPLICATIONS.add(new Application("Gameboy Emulators (mGBA, etc.)",
                 Arrays.asList("mGBA", "VisualBoyAdvance"),
                 Arrays.asList(
-                        new KeyInput("UP", KeyEvent.VK_UP),
-                        new KeyInput("DOWN", KeyEvent.VK_DOWN),
-                        new KeyInput("LEFT", KeyEvent.VK_LEFT),
-                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT),
-                        new KeyInput("A", KeyEvent.VK_Z),
-                        new KeyInput("B", KeyEvent.VK_X),
-                        new KeyInput("L", KeyEvent.VK_A),
-                        new KeyInput("R", KeyEvent.VK_S),
-                        new KeyInput("START", KeyEvent.VK_ENTER),
-                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE)
+                        new KeyInput("UP", KeyEvent.VK_UP, 200, 1000),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 200, 1000),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 200, 1000),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 200, 1000),
+                        new KeyInput("A", KeyEvent.VK_Z, 200, 1000),
+                        new KeyInput("B", KeyEvent.VK_X, 200, 1000),
+                        new KeyInput("L", KeyEvent.VK_A, 200, 1000),
+                        new KeyInput("R", KeyEvent.VK_S, 200, 1000),
+                        new KeyInput("START", KeyEvent.VK_ENTER, 200, 1000),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 200, 1000)
                 )));
 
         // Minecraft
         APPLICATIONS.add(new Application("Minecraft",
                 Arrays.asList("Minecraft", "Cinnamon", "Lunar Client", "Badlion Client"),
                 Arrays.asList(
-                        new KeyInput("W", KeyEvent.VK_W),
-                        new KeyInput("A", KeyEvent.VK_A),
-                        new KeyInput("S", KeyEvent.VK_S),
-                        new KeyInput("D", KeyEvent.VK_D),
-                        new KeyInput("SPACE", KeyEvent.VK_SPACE),
-                        new KeyInput("SHIFT", KeyEvent.VK_SHIFT),
-                        new KeyInput("CTRL", KeyEvent.VK_CONTROL),
-                        new KeyInput("E", KeyEvent.VK_E),
-                        new KeyInput("Q", KeyEvent.VK_Q),
-                        new KeyInput("1", KeyEvent.VK_1),
-                        new KeyInput("2", KeyEvent.VK_2),
-                        new KeyInput("3", KeyEvent.VK_3),
-                        new KeyInput("4", KeyEvent.VK_4),
-                        new KeyInput("5", KeyEvent.VK_5),
-                        new KeyInput("6", KeyEvent.VK_6),
-                        new KeyInput("7", KeyEvent.VK_7),
-                        new KeyInput("8", KeyEvent.VK_8),
-                        new KeyInput("9", KeyEvent.VK_9),
-                        new KeyInput("MOUSE1", InputEvent.BUTTON1_DOWN_MASK),
-                        new KeyInput("MOUSE2", InputEvent.BUTTON2_DOWN_MASK),
-                        new KeyInput("MOUSE3", InputEvent.BUTTON3_DOWN_MASK),
-                        new MouseInput("LEFT", MouseInput.Direction.LEFT),
-                        new MouseInput("RIGHT", MouseInput.Direction.RIGHT),
-                        new MouseInput("UP", MouseInput.Direction.UP),
-                        new MouseInput("DOWN", MouseInput.Direction.DOWN)
+                        new KeyInput("W", KeyEvent.VK_W, 200, 1000),
+                        new KeyInput("A", KeyEvent.VK_A, 200, 1000),
+                        new KeyInput("S", KeyEvent.VK_S, 200, 1000),
+                        new KeyInput("D", KeyEvent.VK_D, 200, 1000),
+                        new KeyInput("SPACE", KeyEvent.VK_SPACE, 200, 1000),
+                        new KeyInput("SHIFT", KeyEvent.VK_SHIFT, 200, 1000),
+                        new KeyInput("CTRL", KeyEvent.VK_CONTROL, 200, 1000),
+                        new KeyInput("E", KeyEvent.VK_E, 200, 1000),
+                        new KeyInput("Q", KeyEvent.VK_Q, 200, 1000),
+                        new KeyInput("1", KeyEvent.VK_1, 200, 1000),
+                        new KeyInput("2", KeyEvent.VK_2, 200, 1000),
+                        new KeyInput("3", KeyEvent.VK_3, 200, 1000),
+                        new KeyInput("4", KeyEvent.VK_4, 200, 1000),
+                        new KeyInput("5", KeyEvent.VK_5, 200, 1000),
+                        new KeyInput("6", KeyEvent.VK_6, 200, 1000),
+                        new KeyInput("7", KeyEvent.VK_7, 200, 1000),
+                        new KeyInput("8", KeyEvent.VK_8, 200, 1000),
+                        new KeyInput("9", KeyEvent.VK_9, 200, 1000),
+                        new KeyInput("MOUSE1", InputEvent.BUTTON1_DOWN_MASK, 200, 1000),
+                        new KeyInput("MOUSE2", InputEvent.BUTTON2_DOWN_MASK, 200, 1000),
+                        new KeyInput("MOUSE3", InputEvent.BUTTON3_DOWN_MASK, 200, 1000),
+                        new MouseInput("LEFT", MouseInput.Direction.LEFT, 500, 1000),
+                        new MouseInput("RIGHT", MouseInput.Direction.RIGHT, 500, 1000),
+                        new MouseInput("UP", MouseInput.Direction.UP, 500, 1000),
+                        new MouseInput("DOWN", MouseInput.Direction.DOWN, 500, 1000)
                 )));
     }
 
@@ -232,10 +232,10 @@ public class Chatter {
 
                     if (inputs instanceof KeyInput) {
                         KeyInput keyInput = (KeyInput) inputs;
-                        startKeyInput(keyInput.getKeyCode(), isLongInput);
+                        startKeyInput(keyInput, isLongInput);
                     } else {
                         MouseInput mouseInput = (MouseInput) inputs;
-                        startMouseInput(mouseInput.getDirection(), isLongInput);
+                        startMouseInput(mouseInput, isLongInput);
                     }
                     break;
                 }
@@ -248,11 +248,11 @@ public class Chatter {
     /**
      * Starts a key input.
      *
-     * @param keyCode   The key code to press.
+     * @param keyInput  The key input to start.
      * @param longInput Whether the input is long or short.
      */
     @Synchronized
-    public static void startKeyInput(int keyCode, boolean longInput) {
+    public static void startKeyInput(KeyInput keyInput, boolean longInput) {
         // Update the lastInput timestamp
         lastKeyInput = System.currentTimeMillis();
 
@@ -261,11 +261,15 @@ public class Chatter {
             keyInputThread.interrupt();
         }
 
+        int keyCode = keyInput.getKeyCode();
+
+        boolean mouseInput = keyCode == InputEvent.BUTTON1_DOWN_MASK
+                || keyCode == InputEvent.BUTTON2_DOWN_MASK;
+
         // Create a new thread for the new input
         keyInputThread = new Thread(() -> {
             try {
                 Robot robot = new Robot();
-                boolean mouseInput = keyCode == InputEvent.BUTTON1_DOWN_MASK || keyCode == InputEvent.BUTTON2_DOWN_MASK;
 
                 // Press the key (or mouse button)
                 if (mouseInput) {
@@ -276,9 +280,9 @@ public class Chatter {
 
                 // Sleep for the input duration
                 if (longInput) {
-                    Thread.sleep(1000L);
+                    Thread.sleep(keyInput.getLongDuration());
                 } else {
-                    Thread.sleep(200L);
+                    Thread.sleep(keyInput.getShortDuration());
                 }
 
                 // Release the key (or mouse button)
@@ -308,12 +312,12 @@ public class Chatter {
     /**
      * Starts a mouse input.
      *
-     * @param direction The direction to move the mouse in.
-     * @param longInput Whether the input is long or short.
+     * @param mouseInput The mouse input to start.
+     * @param longInput  Whether the input is long or short.
      */
     @Synchronized
     @SuppressWarnings("BusyWait")
-    public static synchronized void startMouseInput(MouseInput.Direction direction, boolean longInput) {
+    public static synchronized void startMouseInput(MouseInput mouseInput, boolean longInput) {
         // Update the lastMouseInput timestamp
         lastMouseInput = System.currentTimeMillis();
 
@@ -321,6 +325,8 @@ public class Chatter {
         if (mouseInputThread != null && mouseInputThread.isAlive()) {
             mouseInputThread.interrupt();
         }
+
+        MouseInput.Direction direction = mouseInput.getDirection();
 
         // Create a new thread for the new input
         mouseInputThread = new Thread(() -> {
@@ -341,9 +347,10 @@ public class Chatter {
                     int x = currentPosition.x;
                     int y = currentPosition.y;
 
-                    final int movementDistance = 10; // Customize this value as needed
-                    int duration = longInput ? 500 : 250; // Duration in milliseconds
+                    long duration = longInput ? mouseInput.getLongDuration() : mouseInput.getShortDuration();
                     long endTime = System.currentTimeMillis() + duration;
+
+                    int movementDistance = 10;
 
                     while (System.currentTimeMillis() < endTime) {
                         switch (direction) {

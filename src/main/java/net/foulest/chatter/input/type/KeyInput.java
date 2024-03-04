@@ -12,4 +12,6 @@ public class KeyInput extends Input {
 
     public String inputName;
     public int keyCode;
+    public long shortDuration;
+    public long longDuration;
 }
