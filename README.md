@@ -19,16 +19,12 @@ You will need a Twitch account and an OAuth token to use the application. You ca
 After inputting your OAuth token and the channel you want to listen to, you can start sending messages to the chat
 and the application will translate them into key presses.
 
-Chat messages that are **uppercase** will be translated into a key press and a key release one second later.
+The application will only send inputs if the active window is of the allowed window titles. You can modify the allowed
+window titles in the `ALLOWED_WINDOW_TITLES` list in the main class.
 
-Chat messages that are **lowercase** will be translated into a key press and a key release immediately.
-
-There are some pre-configured key bindings in the `ALLOWED_INPUTS` map in the main class, but you can modify them to
-your liking.
-
-Chatter will only translate messages into inputs if the active window is of the allowed window titles. You can modify
-the allowed window titles in the `ALLOWED_WINDOW_TITLES` list in the main class. This is done to prevent the application
-from sending inputs to the wrong window, which could be dangerous.
+All of Chatter's inputs can be modified in the `ALLOWED_INPUTS` list in the main class. Note: the inputs are
+case-sensitive. Chat messages that are **uppercase** will press the key and hold it for one second.
+Chat messages that are **lowercase** will press the key and release it immediately.
 
 ## Getting Help
 
