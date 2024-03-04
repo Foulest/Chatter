@@ -64,7 +64,7 @@ public class Chatter {
 
         // mGBA (GBA Emulator)
         APPLICATIONS.add(new Application("Gameboy Emulators (mGBA, etc.)",
-                Arrays.asList("mGBA", "Visual Boy Advance"),
+                Arrays.asList("mGBA", "VisualBoyAdvance"),
                 Arrays.asList(
                         new KeyInput("UP", KeyEvent.VK_UP),
                         new KeyInput("DOWN", KeyEvent.VK_DOWN),
