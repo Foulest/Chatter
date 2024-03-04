@@ -21,8 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.*;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
@@ -219,7 +221,7 @@ public class Chatter {
                     log.info("Received " + inputType + " input: " + message);
 
                     // Check if the current window title is allowed
-                    String windowTitle = getForegroundWindowText();
+                    String windowTitle = getForegroundWindowTitle();
                     if (windowTitle == null || application.getWindowTitles().stream().noneMatch(windowTitle::contains)) {
                         log.info("Ignoring " + inputType + " input due to invalid window title: " + windowTitle);
                         return;
@@ -309,10 +311,10 @@ public class Chatter {
      * @param direction The direction to move the mouse in.
      * @param longInput Whether the input is long or short.
      */
-    @SuppressWarnings("BusyWait")
     @Synchronized
-    public static void startMouseInput(MouseInput.Direction direction, boolean longInput) {
-        // Update the lastInput timestamp
+    @SuppressWarnings("BusyWait")
+    public static synchronized void startMouseInput(MouseInput.Direction direction, boolean longInput) {
+        // Update the lastMouseInput timestamp
         lastMouseInput = System.currentTimeMillis();
 
         // If there is an ongoing input, interrupt it
@@ -324,31 +326,47 @@ public class Chatter {
         mouseInputThread = new Thread(() -> {
             try {
                 Robot robot = new Robot();
-                Point currentPosition = MouseInfo.getPointerInfo().getLocation();
-                int x = currentPosition.x;
-                int y = currentPosition.y;
-                final int movementDistance = 10; // Customize this value as needed
-                int duration = longInput ? 500 : 250; // Duration in milliseconds
-                long endTime = System.currentTimeMillis() + duration;
+                WinDef.RECT rect = new WinDef.RECT();
 
-                while (System.currentTimeMillis() < endTime) {
-                    switch (direction) {
-                        case UP:
-                            y -= movementDistance;
-                            break;
-                        case DOWN:
-                            y += movementDistance;
-                            break;
-                        case LEFT:
-                            x -= movementDistance;
-                            break;
-                        case RIGHT:
-                            x += movementDistance;
-                            break;
+                if (MyUser32.INSTANCE.GetWindowRect(MyUser32.INSTANCE.GetForegroundWindow(), rect)) {
+                    // Window boundaries
+                    int minX = rect.left;
+                    int maxX = rect.right;
+                    int minY = rect.top;
+                    int maxY = rect.bottom;
+
+                    Point currentPosition = MouseInfo.getPointerInfo().getLocation();
+                    int x = currentPosition.x;
+                    int y = currentPosition.y;
+                    final int movementDistance = 10; // Customize this value as needed
+                    int duration = longInput ? 500 : 250; // Duration in milliseconds
+                    long endTime = System.currentTimeMillis() + duration;
+
+                    while (System.currentTimeMillis() < endTime) {
+                        switch (direction) {
+                            case UP:
+                                y = Math.max(y - movementDistance, minY);
+                                break;
+                            case DOWN:
+                                y = Math.min(y + movementDistance, maxY);
+                                break;
+                            case LEFT:
+                                x = Math.max(x - movementDistance, minX);
+                                break;
+                            case RIGHT:
+                                x = Math.min(x + movementDistance, maxX);
+                                break;
+                            default:
+                                break;
+                        }
+
+                        // Ensure the mouse stays within the window's boundaries
+                        x = Math.max(minX, Math.min(x, maxX));
+                        y = Math.max(minY, Math.min(y, maxY));
+
+                        robot.mouseMove(x, y);
+                        Thread.sleep(25);
                     }
-
-                    robot.mouseMove(x, y);
-                    Thread.sleep(25);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -370,6 +388,8 @@ public class Chatter {
         WinDef.HWND GetForegroundWindow();
 
         void GetWindowTextA(WinDef.HWND hWnd, byte[] lpString, int nMaxCount);
+
+        boolean GetWindowRect(WinDef.HWND hWnd, WinDef.RECT rect);
     }
 
     /**
@@ -377,7 +397,7 @@ public class Chatter {
      *
      * @return The title of the current foreground window.
      */
-    public static @Nullable String getForegroundWindowText() {
+    public static @Nullable String getForegroundWindowTitle() {
         WinDef.HWND hwnd = MyUser32.INSTANCE.GetForegroundWindow();
 
         if (hwnd == null) {
