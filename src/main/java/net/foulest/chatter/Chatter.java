@@ -6,6 +6,7 @@ import com.github.philippheuer.events4j.reactor.ReactorEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.TwitchChat;
+import com.github.twitch4j.chat.events.channel.GlobalUserStateEvent;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
@@ -41,6 +42,9 @@ public class Chatter {
 
     public static long lastMouseInput = System.currentTimeMillis();
     public static Thread mouseInputThread = null;
+
+    public static boolean isBroadcaster = false;
+    public static Application application = null;
 
     // List of applications to monitor and translate inputs for
     public static final List<Application> APPLICATIONS = new ArrayList<>();
@@ -149,10 +153,9 @@ public class Chatter {
         for (int i = 0; i < APPLICATIONS.size(); i++) {
             System.out.println((i + 1) + ". " + APPLICATIONS.get(i).name);
         }
-        System.out.print("\nEnter the application # you want to monitor: ");
 
+        System.out.print("\nEnter the application # you want to monitor: ");
         String appName = scanner.nextLine().trim();
-        Application application;
 
         // Check if the input is numeric
         if (appName.matches("\\d+")) {
@@ -160,8 +163,6 @@ public class Chatter {
 
             if (index >= 0 && index < APPLICATIONS.size()) {
                 application = APPLICATIONS.get(index);
-            } else {
-                application = null;
             }
         } else {
             // Treat the input as an application name
@@ -191,23 +192,47 @@ public class Chatter {
         EventManager eventManager = twitchClient.getEventManager();
         TwitchChat chat = twitchClient.getChat();
 
-        // Joins the channel and sends a message.
-        log.info("Joining the channel and sending a message...");
-        chat.leaveChannel(channel);
-        chat.joinChannel(channel);
+        eventManager.onEvent(GlobalUserStateEvent.class, event -> {
+            if (event.getDisplayName().isPresent()) {
+                // Check if the display name matches the channel,
+                // signaling the user to be the broadcaster.
+                if (event.getDisplayName().get().equalsIgnoreCase(channel)) {
+                    isBroadcaster = true;
 
-        synchronized (chat) {
-            chat.sendMessage(channel, "[Chatter] Input monitoring is enabled!");
-            chat.sendMessage(channel, "Valid inputs: " + application.getInputs().stream()
-                    .map(Input::getInputName).collect(Collectors.joining(", "))
-                    + " (Note: Uppercase inputs hold the button down for one"
-                    + " second; lowercase inputs press the button once.)"
-            );
+                    // Joins the channel and sends a message.
+                    log.info("Joining the channel and sending a message...");
+                    chat.leaveChannel(channel);
+                    chat.joinChannel(channel);
+
+                    synchronized (chat) {
+                        chat.sendMessage(channel, "[Chatter] Input monitoring is enabled!");
+                        chat.sendMessage(channel, "Valid inputs: " + application.getInputs().stream()
+                                .map(Input::getInputName).collect(Collectors.joining(", "))
+                                + " (Note: Uppercase inputs hold the button down for one"
+                                + " second; lowercase inputs press the button once.)"
+                        );
+                    }
+                } else {
+                    isBroadcaster = false;
+                }
+            }
+        });
+
+        // Stops the setup early if the user is not the broadcaster.
+        if (!isBroadcaster) {
+            log.warn("You are not the broadcaster of the channel. Exiting...");
+            System.exit(0);
+            return;
         }
 
         // Listens for chat messages and processes them as inputs.
         log.info("Setting up the input listener...");
         eventManager.onEvent(IRCMessageEvent.class, event -> event.getMessage().ifPresent(message -> {
+            // Ignores the message if the user is not the broadcaster.
+            if (!isBroadcaster) {
+                return;
+            }
+
             String trimmedMessage = message.trim();
 
             for (Input inputs : application.getInputs()) {
