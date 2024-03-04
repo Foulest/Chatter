@@ -44,7 +44,7 @@ public class Chatter {
     public static final List<Application> APPLICATIONS = new ArrayList<>();
 
     static {
-        // DeSmuME (DS Emulator)
+        // DS Emulators
         APPLICATIONS.add(new Application("DS Emulators (DeSmuME, Citra, etc.)",
                 Arrays.asList("DeSmuME", "Citra"),
                 Arrays.asList(
@@ -62,7 +62,7 @@ public class Chatter {
                         new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE)
                 )));
 
-        // mGBA (GBA Emulator)
+        // Gameboy Emulators
         APPLICATIONS.add(new Application("Gameboy Emulators (mGBA, etc.)",
                 Arrays.asList("mGBA", "VisualBoyAdvance"),
                 Arrays.asList(
@@ -88,6 +88,7 @@ public class Chatter {
                         new KeyInput("D", KeyEvent.VK_D),
                         new KeyInput("SPACE", KeyEvent.VK_SPACE),
                         new KeyInput("SHIFT", KeyEvent.VK_SHIFT),
+                        new KeyInput("CTRL", KeyEvent.VK_CONTROL),
                         new KeyInput("E", KeyEvent.VK_E),
                         new KeyInput("Q", KeyEvent.VK_Q),
                         new KeyInput("1", KeyEvent.VK_1),
@@ -99,8 +100,9 @@ public class Chatter {
                         new KeyInput("7", KeyEvent.VK_7),
                         new KeyInput("8", KeyEvent.VK_8),
                         new KeyInput("9", KeyEvent.VK_9),
-                        new KeyInput("LEFT CLICK", InputEvent.BUTTON1_DOWN_MASK),
-                        new KeyInput("RIGHT CLICK", InputEvent.BUTTON2_DOWN_MASK),
+                        new KeyInput("MOUSE1", InputEvent.BUTTON1_DOWN_MASK),
+                        new KeyInput("MOUSE2", InputEvent.BUTTON2_DOWN_MASK),
+                        new KeyInput("MOUSE3", InputEvent.BUTTON3_DOWN_MASK),
                         new MouseInput("LEFT", MouseInput.Direction.LEFT),
                         new MouseInput("RIGHT", MouseInput.Direction.RIGHT),
                         new MouseInput("UP", MouseInput.Direction.UP),
