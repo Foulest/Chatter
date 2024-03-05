@@ -6,14 +6,15 @@ import com.github.philippheuer.events4j.reactor.ReactorEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.TwitchChat;
-import com.github.twitch4j.chat.events.channel.GlobalUserStateEvent;
 import com.github.twitch4j.chat.events.channel.IRCMessageEvent;
+import com.github.twitch4j.chat.events.channel.UserStateEvent;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.foulest.chatter.input.Input;
+import net.foulest.chatter.input.InputRequest;
 import net.foulest.chatter.input.type.KeyInput;
 import net.foulest.chatter.input.type.MouseInput;
 import net.foulest.chatter.util.Application;
@@ -22,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Queue;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +43,8 @@ public class Chatter {
 
     public static long lastMouseInput = System.currentTimeMillis();
     public static Thread mouseInputThread = null;
+
+    public static Queue<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
 
     public static boolean isBroadcaster = false;
     public static Application application = null;
@@ -192,82 +195,154 @@ public class Chatter {
         EventManager eventManager = twitchClient.getEventManager();
         TwitchChat chat = twitchClient.getChat();
 
-        eventManager.onEvent(GlobalUserStateEvent.class, event -> {
-            if (event.getDisplayName().isPresent()) {
-                // Check if the display name matches the channel,
-                // signaling the user to be the broadcaster.
-                if (event.getDisplayName().get().equalsIgnoreCase(channel)) {
-                    isBroadcaster = true;
-
-                    // Joins the channel and sends a message.
-                    log.info("Joining the channel and sending a message...");
-                    chat.leaveChannel(channel);
-                    chat.joinChannel(channel);
-
-                    synchronized (chat) {
-                        chat.sendMessage(channel, "[Chatter] Input monitoring is enabled!");
-                        chat.sendMessage(channel, "Valid inputs: " + application.getInputs().stream()
-                                .map(Input::getInputName).collect(Collectors.joining(", "))
-                                + " (Note: Uppercase inputs hold the button down for one"
-                                + " second; lowercase inputs press the button once.)"
-                        );
-                    }
-                } else {
-                    isBroadcaster = false;
-                }
+        // Listens for the broadcaster status on UserStateEvent.
+        eventManager.onEvent(UserStateEvent.class, event -> {
+            if (event.isBroadcaster()) {
+                isBroadcaster = true;
             }
         });
 
-        // Stops the setup early if the user is not the broadcaster.
-        if (!isBroadcaster) {
-            log.warn("You are not the broadcaster of the channel. Exiting...");
-            System.exit(0);
-            return;
+        // Attempts to verify the broadcaster status.
+        log.info("Attempting to verify broadcaster status...");
+        long startTime = System.currentTimeMillis(); // Capture start time
+        long timeout = 5000; // Timeout in milliseconds (5 seconds)
+
+        // Waits for the broadcaster status to be verified.
+        // If the status is not verified within the timeout period, the program will exit.
+        while (!isBroadcaster) {
+            if (System.currentTimeMillis() - startTime > timeout) {
+                log.error("Failed to verify broadcaster status within the timeout period.");
+                System.exit(0);
+                return;
+            }
+
+            // Wait for the broadcaster status to be verified
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                log.error("Thread was interrupted.", ex);
+                return;
+            }
+        }
+
+        // Verifies the broadcaster status.
+        log.info("Broadcaster status verified.");
+
+        // Sends a message to the channel.
+        log.info("Sending a message to the channel...");
+        chat.leaveChannel(channel);
+        chat.joinChannel(channel);
+
+        synchronized (chat) {
+            chat.sendMessage(channel, "[Chatter] Input monitoring is enabled!");
+            chat.sendMessage(channel, "Valid inputs: " + application.getInputs().stream()
+                    .map(Input::getInputName).collect(Collectors.joining(", "))
+                    + " (Note: Uppercase inputs hold the button down for one"
+                    + " second; lowercase inputs press the button once.)"
+            );
         }
 
         // Listens for chat messages and processes them as inputs.
         log.info("Setting up the input listener...");
         eventManager.onEvent(IRCMessageEvent.class, event -> event.getMessage().ifPresent(message -> {
-            // Ignores the message if the user is not the broadcaster.
-            if (!isBroadcaster) {
+            // Ignores messages that aren't sent by chatters.
+            if (!event.getCommandType().equals("PRIVMSG")) {
                 return;
             }
 
-            String trimmedMessage = message.trim();
+            // Ignores messages if the user is not the broadcaster.
+            if (!isBroadcaster) {
+                log.info("Ignoring message: " + message + " (not the broadcaster)");
+                return;
+            }
 
-            for (Input inputs : application.getInputs()) {
-                String input = inputs.getInputName();
+            // Ignores messages if the application's window is not in focus.
+            String windowTitle = getForegroundWindowTitle();
+            if (windowTitle == null || application.getWindowTitles().stream().noneMatch(windowTitle::contains)) {
+                log.info("Ignoring message: " + message + " (application not in focus)"
+                        + " | " + event
+                );
+                return;
+            }
+
+            message = message.trim();
+
+            for (Input input : application.getInputs()) {
+                String inputName = input.getInputName();
 
                 // Check if the trimmed message matches any allowed input (case-insensitive)
-                if (trimmedMessage.equalsIgnoreCase(input)) {
-                    boolean isLongInput = trimmedMessage.equals(input);
-                    String inputType = isLongInput ? "long" : "short";
+                if (message.equalsIgnoreCase(inputName)) {
+                    log.info("Adding input to queue: " + message);
+                    inputQueue.add(new InputRequest(message, input, System.currentTimeMillis()));
 
-                    log.info("Received " + inputType + " input: " + message);
+                    new Thread(() -> {
+                        // Add a delay to allow accumulation of inputs
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
 
-                    // Check if the current window title is allowed
-                    String windowTitle = getForegroundWindowTitle();
-                    if (windowTitle == null || application.getWindowTitles().stream().noneMatch(windowTitle::contains)) {
-                        log.info("Ignoring " + inputType + " input due to invalid window title: " + windowTitle);
-                        return;
-                    }
+                        // Process the queue
+                        if (!inputQueue.isEmpty()) {
+                            String mostFrequentInputName = findMostFrequentInput();
 
-                    // If all checks pass, start the input
-                    log.info("Inputting " + inputType + " input: " + message);
+                            if (mostFrequentInputName != null) {
+                                // Find the corresponding InputRequest for the most frequent input
+                                for (InputRequest request : inputQueue) {
+                                    if (request.input.getInputName().equalsIgnoreCase(mostFrequentInputName)) {
+                                        boolean isLongInput = request.message.toUpperCase().equals(request.message);
+                                        log.info("Processing input: " + request.message);
 
-                    if (inputs instanceof KeyInput) {
-                        KeyInput keyInput = (KeyInput) inputs;
-                        startKeyInput(keyInput, isLongInput);
-                    } else {
-                        MouseInput mouseInput = (MouseInput) inputs;
-                        startMouseInput(mouseInput, isLongInput);
-                    }
+                                        if (request.input instanceof KeyInput) {
+                                            startKeyInput((KeyInput) request.input, isLongInput);
+                                        } else if (request.input instanceof MouseInput) {
+                                            startMouseInput((MouseInput) request.input, isLongInput);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+
+                            inputQueue.clear(); // Clear the queue after processing
+                        }
+                    }).start();
                     break;
                 }
             }
         }));
 
         log.info("Chatter is now running!");
+    }
+
+    /**
+     * Finds the most frequent input in the input queue.
+     *
+     * @return The name of the most frequent input, or null if the queue is empty.
+     */
+    public static @Nullable String findMostFrequentInput() {
+        if (inputQueue.isEmpty()) {
+            return null;
+        }
+
+        Map<String, Integer> inputCount = new HashMap<>();
+        String mostFrequentInput = null;
+        int maxCount = 0;
+
+        // Tally occurrences of each input
+        for (InputRequest request : inputQueue) {
+            String inputName = request.input.getInputName().toLowerCase(); // Normalize input name to lower case
+            int count = inputCount.getOrDefault(inputName, 0) + 1;
+            inputCount.put(inputName, count);
+
+            if (count > maxCount) {
+                maxCount = count;
+                mostFrequentInput = inputName;
+            }
+        }
+        return mostFrequentInput;
     }
 
     /**

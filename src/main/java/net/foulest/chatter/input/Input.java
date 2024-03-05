@@ -8,4 +8,6 @@ import lombok.Setter;
 public class Input {
 
     public String inputName;
+    public long shortDuration;
+    public long longDuration;
 }
