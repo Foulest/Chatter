@@ -57,34 +57,34 @@ public class Chatter {
         APPLICATIONS.add(new Application("DS Emulators (DeSmuME, Citra, etc.)",
                 Arrays.asList("DeSmuME", "Citra"),
                 Arrays.asList(
-                        new KeyInput("UP", KeyEvent.VK_UP, 200, 1000),
-                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 200, 1000),
-                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 200, 1000),
-                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 200, 1000),
-                        new KeyInput("X", KeyEvent.VK_A, 200, 1000),
-                        new KeyInput("Y", KeyEvent.VK_S, 200, 1000),
-                        new KeyInput("A", KeyEvent.VK_Z, 200, 1000),
-                        new KeyInput("B", KeyEvent.VK_X, 200, 1000),
-                        new KeyInput("L", KeyEvent.VK_Q, 200, 1000),
-                        new KeyInput("R", KeyEvent.VK_W, 200, 1000),
-                        new KeyInput("START", KeyEvent.VK_ENTER, 200, 1000),
-                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 200, 1000)
+                        new KeyInput("UP", KeyEvent.VK_UP, 130, 1000),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 130, 1000),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 130, 1000),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 130, 1000),
+                        new KeyInput("X", KeyEvent.VK_A, 130, 1000),
+                        new KeyInput("Y", KeyEvent.VK_S, 130, 1000),
+                        new KeyInput("A", KeyEvent.VK_Z, 130, 1000),
+                        new KeyInput("B", KeyEvent.VK_X, 130, 1000),
+                        new KeyInput("L", KeyEvent.VK_Q, 130, 1000),
+                        new KeyInput("R", KeyEvent.VK_W, 130, 1000),
+                        new KeyInput("START", KeyEvent.VK_ENTER, 130, 1000),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 130, 1000)
                 )));
 
         // Gameboy Emulators
         APPLICATIONS.add(new Application("Gameboy Emulators (mGBA, etc.)",
                 Arrays.asList("mGBA", "VisualBoyAdvance"),
                 Arrays.asList(
-                        new KeyInput("UP", KeyEvent.VK_UP, 200, 1000),
-                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 200, 1000),
-                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 200, 1000),
-                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 200, 1000),
-                        new KeyInput("A", KeyEvent.VK_Z, 200, 1000),
-                        new KeyInput("B", KeyEvent.VK_X, 200, 1000),
-                        new KeyInput("L", KeyEvent.VK_A, 200, 1000),
-                        new KeyInput("R", KeyEvent.VK_S, 200, 1000),
-                        new KeyInput("START", KeyEvent.VK_ENTER, 200, 1000),
-                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 200, 1000)
+                        new KeyInput("UP", KeyEvent.VK_UP, 130, 1000),
+                        new KeyInput("DOWN", KeyEvent.VK_DOWN, 130, 1000),
+                        new KeyInput("LEFT", KeyEvent.VK_LEFT, 130, 1000),
+                        new KeyInput("RIGHT", KeyEvent.VK_RIGHT, 130, 1000),
+                        new KeyInput("A", KeyEvent.VK_Z, 130, 1000),
+                        new KeyInput("B", KeyEvent.VK_X, 130, 1000),
+                        new KeyInput("L", KeyEvent.VK_A, 130, 1000),
+                        new KeyInput("R", KeyEvent.VK_S, 130, 1000),
+                        new KeyInput("START", KeyEvent.VK_ENTER, 130, 1000),
+                        new KeyInput("SELECT", KeyEvent.VK_BACK_SPACE, 130, 1000)
                 )));
 
         // Minecraft
@@ -279,7 +279,7 @@ public class Chatter {
                     new Thread(() -> {
                         // Add a delay to allow accumulation of inputs
                         try {
-                            Thread.sleep(500);
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
                             return;
