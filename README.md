@@ -8,7 +8,7 @@
 
 ## Usage
 
-Chatter's main usage is, of course, allowing chat to play video games like Pokemon by themselves, but it can also be
+Chatter's main usage is allowing chat to play video games like Pokemon by themselves, but it can also be
 used for other purposes.
 
 In order to start using Chatter, you will need to clone the repository and run the `main` method in the `Chatter` class.
