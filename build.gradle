@@ -28,7 +28,7 @@ repositories {
 
 dependencies {
     // Logback Classic - for logging; needed by Twitch4J
-    // Note: keep this version at 1.3.14 to avoid conflicts with Java 9+ modules
+    // Note: Keep this version at 1.3.14 to avoid conflicts with Java 9+ modules
     // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.3.14'
 
@@ -59,20 +59,8 @@ tasks {
         dependsOn(clean)
     }
 
-    processResources {
-        filesMatching('**/*.yml') {
-            filter { line ->
-                line.replace('${project.version}', project.version)
-            }
-        }
-    }
-
     tasks.register('sourceJar', Jar) {
         from sourceSets.main.allJava
-    }
-
-    jar.configure {
-        archiveClassifier = 'default'
     }
 }
 

@@ -218,6 +218,7 @@ public class Chatter {
 
             // Wait for the broadcaster status to be verified
             try {
+                //noinspection BusyWait
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
