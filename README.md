@@ -9,7 +9,8 @@
 ## Usage
 
 Chatter's main usage is allowing chat to play video games like Pokemon by themselves, but it can also be
-used for other purposes.
+used for other purposes. Chatter also has a random inputs mode that will randomly press keys and move the mouse
+around the screen. This mode does not require Twitch chat to function.
 
 In order to start using Chatter, you will need to clone the repository and run the `main` method in the `Chatter` class.
 
