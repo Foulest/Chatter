@@ -24,7 +24,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class InputRequest {
 
-    public String message;
-    public Input input;
-    public long timestamp;
+    private String message;
+    private Input input;
+    private long timestamp;
 }

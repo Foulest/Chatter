@@ -25,12 +25,12 @@ import net.foulest.chatter.input.Input;
 @Getter
 @Setter
 @AllArgsConstructor
-public class MouseInput extends Input {
+public class MouseInput implements Input {
 
-    public String inputName;
-    public Direction direction;
-    public long shortDuration;
-    public long longDuration;
+    private String inputName;
+    private Direction direction;
+    private long shortDuration;
+    private long longDuration;
 
     public enum Direction {
         LEFT,

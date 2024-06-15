@@ -17,14 +17,11 @@
  */
 package net.foulest.chatter.input;
 
-import lombok.Getter;
-import lombok.Setter;
+public interface Input {
 
-@Getter
-@Setter
-public class Input {
+    String getInputName();
 
-    public String inputName;
-    public long shortDuration;
-    public long longDuration;
+    long getShortDuration();
+
+    long getLongDuration();
 }

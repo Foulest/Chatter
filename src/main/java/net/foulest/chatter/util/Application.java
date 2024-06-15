@@ -29,7 +29,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Application {
 
-    public String name;
-    public List<String> windowTitles;
-    public List<Input> inputs;
+    private String name;
+    private List<String> windowTitles;
+    private List<Input> inputs;
 }

@@ -57,23 +57,14 @@ import java.util.stream.Collectors;
 @Slf4j(topic = "Chatter")
 public class Chatter {
 
-    public static KeyInput lastKeyInput;
-    public static boolean lastKeyInputLong;
-    public static long lastKeyInputTimestamp = System.currentTimeMillis();
+    private static Thread mouseInputThread = null;
+    private static final Queue<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
 
-    public static MouseInput lastMouseInput;
-    public static boolean lastMouseInputLong;
-    public static long lastMouseInputTimestamp = System.currentTimeMillis();
-
-    public static Thread mouseInputThread = null;
-    public static Queue<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
-
-    public static boolean randomMode = false;
-    public static boolean isBroadcaster = false;
-    public static Application application = null;
+    private static boolean isBroadcaster = false;
+    private static Application application = null;
 
     // List of applications to monitor and translate inputs for
-    public static final List<Application> APPLICATIONS = new ArrayList<>();
+    protected static final List<Application> APPLICATIONS = new ArrayList<>();
 
     static {
         // DS Emulators
@@ -169,13 +160,14 @@ public class Chatter {
         System.out.println("1. Random inputs");
         System.out.println("2. Read inputs from Twitch chat");
         System.out.print("\nEnter the input # you want: ");
-        randomMode = scanner.nextLine().trim().equals("1");
+
+        boolean randomMode = scanner.nextLine().trim().equals("1");
 
         // Asks the user for the application they want to monitor.
         // This is the application the bot will translate inputs for.
         System.out.println("\nSupported Applications:");
         for (int i = 0; i < APPLICATIONS.size(); i++) {
-            System.out.println((i + 1) + ". " + APPLICATIONS.get(i).name);
+            System.out.println((i + 1) + ". " + APPLICATIONS.get(i).getName());
         }
 
         System.out.print("\nEnter the application # you want to monitor: ");
@@ -191,7 +183,7 @@ public class Chatter {
         } else {
             // Treat the input as an application name
             application = APPLICATIONS.stream()
-                    .filter(app -> app.name.equalsIgnoreCase(appName))
+                    .filter(app -> app.getName().equalsIgnoreCase(appName))
                     .findFirst()
                     .orElse(null);
         }
@@ -282,15 +274,14 @@ public class Chatter {
         String channel = scanner.nextLine().trim();
 
         // Validates the channel username.
-        if (channel.length() > 25 || channel.length() < 4 || channel.matches(".*[^a-zA-Z0-9_].*")) {
+        if (channel.length() > 25 || channel.length() < 4 || channel.matches(".*\\W.*")) {
             log.warn("Invalid channel username. It must be between 4 and 25 characters"
                     + " and only contain letters, numbers, and underscores.");
             return;
         }
 
         // Sets up the Twitch client.
-        System.out.println();
-        log.info("Setting up the Twitch client...");
+        log.info("\nSetting up the Twitch client...");
         @Cleanup TwitchClient twitchClient = TwitchClientBuilder.builder()
                 .withDefaultEventHandler(ReactorEventHandler.class)
                 .withDefaultAuthToken(credential)
@@ -398,14 +389,14 @@ public class Chatter {
                             if (mostFrequentInputName != null) {
                                 // Find the corresponding InputRequest for the most frequent input
                                 for (InputRequest request : inputQueue) {
-                                    if (request.input.getInputName().equalsIgnoreCase(mostFrequentInputName)) {
-                                        boolean isLongInput = request.message.toUpperCase().equals(request.message);
-                                        log.info("Processing input: {}", request.message);
+                                    if (request.getInput().getInputName().equalsIgnoreCase(mostFrequentInputName)) {
+                                        boolean isLongInput = request.getMessage().toUpperCase().equals(request.getMessage());
+                                        log.info("Processing input: {}", request.getMessage());
 
-                                        if (request.input instanceof KeyInput) {
-                                            startKeyInput((KeyInput) request.input, isLongInput);
-                                        } else if (request.input instanceof MouseInput) {
-                                            startMouseInput((MouseInput) request.input, isLongInput);
+                                        if (request.getInput() instanceof KeyInput) {
+                                            startKeyInput((KeyInput) request.getInput(), isLongInput);
+                                        } else if (request.getInput() instanceof MouseInput) {
+                                            startMouseInput((MouseInput) request.getInput(), isLongInput);
                                         }
                                         break;
                                     }
@@ -437,7 +428,7 @@ public class Chatter {
 
         // Tally occurrences of each input
         for (InputRequest request : inputQueue) {
-            String inputName = request.input.getInputName().toLowerCase(); // Normalize input name to lower case
+            String inputName = request.getInput().getInputName().toLowerCase(); // Normalize input name to lower case
             int count = inputCount.getOrDefault(inputName, 0) + 1;
             inputCount.put(inputName, count);
 
@@ -457,10 +448,6 @@ public class Chatter {
      */
     @Synchronized
     public static void startKeyInput(@NotNull KeyInput keyInput, boolean longInput) {
-        lastKeyInput = keyInput;
-        lastKeyInputTimestamp = System.currentTimeMillis();
-        lastKeyInputLong = longInput;
-
         int keyCode = keyInput.getKeyCode();
 
         boolean mouseInput = keyCode == InputEvent.BUTTON1_DOWN_MASK
@@ -513,10 +500,6 @@ public class Chatter {
     @Synchronized
     @SuppressWarnings("BusyWait")
     public static synchronized void startMouseInput(MouseInput mouseInput, boolean longInput) {
-        lastMouseInput = mouseInput;
-        lastMouseInputTimestamp = System.currentTimeMillis();
-        lastMouseInputLong = longInput;
-
         // If there is an ongoing input, interrupt it
         if (mouseInputThread != null && mouseInputThread.isAlive()) {
             mouseInputThread.interrupt();
@@ -530,7 +513,7 @@ public class Chatter {
                 Robot robot = new Robot();
                 WinDef.RECT rect = new WinDef.RECT();
 
-                if (MyUser32.INSTANCE.GetWindowRect(MyUser32.INSTANCE.GetForegroundWindow(), rect)) {
+                if (MyUser32.INSTANCE.getWindowRect(MyUser32.INSTANCE.getForegroundWindow(), rect)) {
                     // Define the boundaries of the window
                     // This is used to ensure the mouse stays within the window's boundaries
                     int buffer = 10;
@@ -593,11 +576,11 @@ public class Chatter {
 
         MyUser32 INSTANCE = Native.load("user32", MyUser32.class);
 
-        WinDef.HWND GetForegroundWindow();
+        WinDef.HWND getForegroundWindow();
 
-        void GetWindowTextA(WinDef.HWND hWnd, byte[] lpString, int nMaxCount);
+        void getWindowTextA(WinDef.HWND hWnd, byte[] lpString, int nMaxCount);
 
-        boolean GetWindowRect(WinDef.HWND hWnd, WinDef.RECT rect);
+        boolean getWindowRect(WinDef.HWND hWnd, WinDef.RECT rect);
     }
 
     /**
@@ -606,14 +589,14 @@ public class Chatter {
      * @return The title of the current foreground window.
      */
     public static @Nullable String getForegroundWindowTitle() {
-        WinDef.HWND hwnd = MyUser32.INSTANCE.GetForegroundWindow();
+        WinDef.HWND hwnd = MyUser32.INSTANCE.getForegroundWindow();
 
         if (hwnd == null) {
             return null;
         }
 
         byte[] windowText = new byte[512];
-        MyUser32.INSTANCE.GetWindowTextA(hwnd, windowText, 512);
+        MyUser32.INSTANCE.getWindowTextA(hwnd, windowText, 512);
         return Native.toString(windowText).trim();
     }
 }

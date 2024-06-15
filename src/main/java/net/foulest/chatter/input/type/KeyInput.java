@@ -25,10 +25,10 @@ import net.foulest.chatter.input.Input;
 @Getter
 @Setter
 @AllArgsConstructor
-public class KeyInput extends Input {
+public class KeyInput implements Input {
 
-    public String inputName;
-    public int keyCode;
-    public long shortDuration;
-    public long longDuration;
+    private String inputName;
+    private int keyCode;
+    private long shortDuration;
+    private long longDuration;
 }
