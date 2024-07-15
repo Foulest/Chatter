@@ -38,7 +38,7 @@ dependencies {
 
     // Events4J - for handling events
     // https://github.com/PhilippHeuer/events4j
-    implementation group: 'com.github.philippheuer.events4j', name: 'events4j-handler-reactor', version: '0.12.1'
+    implementation group: 'com.github.philippheuer.events4j', name: 'events4j-handler-reactor', version: '0.12.2'
 
     // JNA platform - for interacting with native libraries
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
