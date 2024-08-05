@@ -20,10 +20,12 @@ package net.foulest.chatter.input.type;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import net.foulest.chatter.input.Input;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 public class KeyInput implements Input {
 

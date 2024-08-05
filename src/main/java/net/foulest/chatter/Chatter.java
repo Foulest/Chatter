@@ -28,7 +28,9 @@ import com.github.twitch4j.chat.events.channel.UserStateEvent;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
+import lombok.AccessLevel;
 import lombok.Cleanup;
+import lombok.NoArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.foulest.chatter.input.Input;
@@ -42,8 +44,8 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Queue;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
@@ -54,17 +56,18 @@ import java.util.stream.Collectors;
  * @author Foulest
  * @project Chatter
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "Chatter")
-public class Chatter {
+public final class Chatter {
 
-    private static Thread mouseInputThread = null;
-    private static final Queue<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
+    private static Thread mouseInputThread;
+    private static final Collection<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
 
-    private static boolean isBroadcaster = false;
-    private static Application application = null;
+    private static boolean isBroadcaster;
+    private static Application application;
 
     // List of applications to monitor and translate inputs for
-    protected static final List<Application> APPLICATIONS = new ArrayList<>();
+    private static final List<Application> APPLICATIONS = new ArrayList<>();
 
     static {
         // DS Emulators
@@ -209,7 +212,7 @@ public class Chatter {
      * This mode randomly generates inputs for the application.
      */
     @SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
-    public static void setupRandomMode() {
+    private static void setupRandomMode() {
         while (true) {
             // Ignores messages if the application's window is not in focus.
             String windowTitle = getForegroundWindowTitle();
@@ -224,7 +227,7 @@ public class Chatter {
             }
 
             // Randomly get one of the application's inputs.
-            Random random = new Random();
+            Random random = new SecureRandom();
             Input input = application.getInputs().get(random.nextInt(application.getInputs().size()));
             boolean longInput = random.nextBoolean();
 
@@ -252,7 +255,7 @@ public class Chatter {
      *
      * @param scanner The scanner to read input from.
      */
-    public static void setupTwitchMonitoring(@NotNull Scanner scanner) {
+    private static void setupTwitchMonitoring(@NotNull Scanner scanner) {
         // Asks the user for their Twitch OAuth token.
         // This is used to authenticate the bot with Twitch.
         // Get yours here: https://twitchapps.com/tmi
@@ -363,15 +366,15 @@ public class Chatter {
                 return;
             }
 
-            message = message.trim();
+            String trim = message.trim();
 
             for (Input input : application.getInputs()) {
                 String inputName = input.getInputName();
 
                 // Check if the trimmed message matches any allowed input (case-insensitive)
-                if (message.equalsIgnoreCase(inputName)) {
-                    log.info("Adding input to queue: {}", message);
-                    inputQueue.add(new InputRequest(message, input, System.currentTimeMillis()));
+                if (trim.equalsIgnoreCase(inputName)) {
+                    log.info("Adding input to queue: {}", trim);
+                    inputQueue.add(new InputRequest(trim, input, System.currentTimeMillis()));
 
                     new Thread(() -> {
                         // Add a delay to allow accumulation of inputs
@@ -390,7 +393,7 @@ public class Chatter {
                                 // Find the corresponding InputRequest for the most frequent input
                                 for (InputRequest request : inputQueue) {
                                     if (request.getInput().getInputName().equalsIgnoreCase(mostFrequentInputName)) {
-                                        boolean isLongInput = request.getMessage().toUpperCase().equals(request.getMessage());
+                                        boolean isLongInput = request.getMessage().toUpperCase(Locale.ROOT).equals(request.getMessage());
                                         log.info("Processing input: {}", request.getMessage());
 
                                         if (request.getInput() instanceof KeyInput) {
@@ -417,7 +420,7 @@ public class Chatter {
      *
      * @return The name of the most frequent input, or null if the queue is empty.
      */
-    public static @Nullable String findMostFrequentInput() {
+    private static @Nullable String findMostFrequentInput() {
         if (inputQueue.isEmpty()) {
             return null;
         }
@@ -428,7 +431,7 @@ public class Chatter {
 
         // Tally occurrences of each input
         for (InputRequest request : inputQueue) {
-            String inputName = request.getInput().getInputName().toLowerCase(); // Normalize input name to lower case
+            String inputName = request.getInput().getInputName().toLowerCase(Locale.ROOT); // Normalize input name to lower case
             int count = inputCount.getOrDefault(inputName, 0) + 1;
             inputCount.put(inputName, count);
 
@@ -447,7 +450,7 @@ public class Chatter {
      * @param longInput Whether the input is long or short.
      */
     @Synchronized
-    public static void startKeyInput(@NotNull KeyInput keyInput, boolean longInput) {
+    private static void startKeyInput(@NotNull KeyInput keyInput, boolean longInput) {
         int keyCode = keyInput.getKeyCode();
 
         boolean mouseInput = keyCode == InputEvent.BUTTON1_DOWN_MASK
@@ -483,7 +486,7 @@ public class Chatter {
                 } else {
                     robot.keyRelease(keyCode);
                 }
-            } catch (Exception ignored) {
+            } catch (AWTException ignored) {
             }
         });
 
@@ -499,7 +502,7 @@ public class Chatter {
      */
     @Synchronized
     @SuppressWarnings("BusyWait")
-    public static synchronized void startMouseInput(MouseInput mouseInput, boolean longInput) {
+    private static void startMouseInput(MouseInput mouseInput, boolean longInput) {
         // If there is an ongoing input, interrupt it
         if (mouseInputThread != null && mouseInputThread.isAlive()) {
             mouseInputThread.interrupt();
@@ -560,7 +563,7 @@ public class Chatter {
                         Thread.sleep(25);
                     }
                 }
-            } catch (Exception ignored) {
+            } catch (AWTException | InterruptedException ignored) {
             }
         });
 
@@ -588,7 +591,7 @@ public class Chatter {
      *
      * @return The title of the current foreground window.
      */
-    public static @Nullable String getForegroundWindowTitle() {
+    private static @Nullable String getForegroundWindowTitle() {
         WinDef.HWND hwnd = MyUser32.INSTANCE.getForegroundWindow();
 
         if (hwnd == null) {

@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.1.0'
+version = '1.1.1'
 description = project.name
 
 compileJava.options.encoding = 'UTF-8'
@@ -21,8 +21,8 @@ repositories {
     }
 
     maven {
-        url 'https://jitpack.io'
         name 'JitPack'
+        url 'https://jitpack.io'
     }
 }
 
@@ -67,8 +67,8 @@ tasks {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = "net.foulest.chatter"
-            artifactId = project.name
+            groupId = 'net.foulest.chatter' as Publication
+            artifactId = project.name as Publication
             version = project.version
 
             from components.java
