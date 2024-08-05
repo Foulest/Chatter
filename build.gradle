@@ -34,7 +34,7 @@ dependencies {
 
     // Twitch4J - for interacting with the Twitch API
     // https://github.com/twitch4j/twitch4j
-    implementation group: 'com.github.twitch4j', name: 'twitch4j', version: '1.20.0'
+    implementation group: 'com.github.twitch4j', name: 'twitch4j', version: '1.21.0'
 
     // Events4J - for handling events
     // https://github.com/PhilippHeuer/events4j
