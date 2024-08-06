@@ -3,6 +3,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CodeQL Badge](https://github.com/Foulest/Chatter/actions/workflows/codeql.yml/badge.svg)](https://github.com/Foulest/Chatter/actions/workflows/codeql.yml)
 [![JitPack Badge](https://jitpack.io/v/Foulest/Chatter.svg)](https://jitpack.io/#Foulest/Chatter)
+[![Lines of Code](https://img.shields.io/endpoint?url=https://ghloc.vercel.app/api/Foulest/Chatter/badge?filter=.java$&style=flat&logoColor=white&label=Lines%20of%20Code)](https://ghloc.vercel.app/Foulest/Chatter?branch=main)
 
 **Chatter** is a Twitch chat utility that translates chat messages into key presses.
 
