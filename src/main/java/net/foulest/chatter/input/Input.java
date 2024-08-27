@@ -17,29 +17,27 @@
  */
 package net.foulest.chatter.input;
 
-/**
- * Represents an input, such as a key press or mouse click.
- */
+/** Represents an input, such as a key press or mouse click. */
 public interface Input {
 
-    /**
-     * Gets the name of the input.
-     *
-     * @return The name of the input.
-     */
-    String getInputName();
+  /**
+   * Gets the name of the input.
+   *
+   * @return The name of the input.
+   */
+  String getInputName();
 
-    /**
-     * Gets the short duration of the input.
-     *
-     * @return The short duration of the input.
-     */
-    long getShortDuration();
+  /**
+   * Gets the short duration of the input.
+   *
+   * @return The short duration of the input.
+   */
+  long getShortDuration();
 
-    /**
-     * Gets the long duration of the input.
-     *
-     * @return The long duration of the input.
-     */
-    long getLongDuration();
+  /**
+   * Gets the long duration of the input.
+   *
+   * @return The long duration of the input.
+   */
+  long getLongDuration();
 }

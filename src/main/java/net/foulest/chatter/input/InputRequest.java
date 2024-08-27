@@ -20,27 +20,25 @@ package net.foulest.chatter.input;
 import lombok.Getter;
 import lombok.ToString;
 
-/**
- * Represents an input request.
- */
+/** Represents an input request. */
 @Getter
 @ToString
 public class InputRequest {
 
-    private final String message;
-    private final Input input;
-    private final long timestamp;
+  private final String message;
+  private final Input input;
+  private final long timestamp;
 
-    /**
-     * Constructs a new input request.
-     *
-     * @param message The message of the input request.
-     * @param input   The input of the input request.
-     * @param timestamp The timestamp of the input request.
-     */
-    public InputRequest(String message, Input input, long timestamp) {
-        this.message = message;
-        this.input = input;
-        this.timestamp = timestamp;
-    }
+  /**
+   * Constructs a new input request.
+   *
+   * @param message The message of the input request.
+   * @param input The input of the input request.
+   * @param timestamp The timestamp of the input request.
+   */
+  public InputRequest(String message, Input input, long timestamp) {
+    this.message = message;
+    this.input = input;
+    this.timestamp = timestamp;
+  }
 }

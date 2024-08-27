@@ -22,31 +22,29 @@ import lombok.Setter;
 import lombok.ToString;
 import net.foulest.chatter.input.Input;
 
-/**
- * Represents a key input.
- */
+/** Represents a key input. */
 @Getter
 @Setter
 @ToString
 public class KeyInput implements Input {
 
-    private String inputName;
-    private int keyCode;
-    private long shortDuration;
-    private long longDuration;
+  private String inputName;
+  private int keyCode;
+  private long shortDuration;
+  private long longDuration;
 
-    /**
-     * Constructs a new key input.
-     *
-     * @param inputName The name of the input.
-     * @param keyCode The key code of the input.
-     * @param shortDuration The short duration of the input.
-     * @param longDuration The long duration of the input.
-     */
-    public KeyInput(String inputName, int keyCode, long shortDuration, long longDuration) {
-        this.inputName = inputName;
-        this.keyCode = keyCode;
-        this.shortDuration = shortDuration;
-        this.longDuration = longDuration;
-    }
+  /**
+   * Constructs a new key input.
+   *
+   * @param inputName The name of the input.
+   * @param keyCode The key code of the input.
+   * @param shortDuration The short duration of the input.
+   * @param longDuration The long duration of the input.
+   */
+  public KeyInput(String inputName, int keyCode, long shortDuration, long longDuration) {
+    this.inputName = inputName;
+    this.keyCode = keyCode;
+    this.shortDuration = shortDuration;
+    this.longDuration = longDuration;
+  }
 }
