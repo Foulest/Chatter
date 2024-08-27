@@ -17,16 +17,17 @@
  */
 package net.foulest.chatter.input.type;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import net.foulest.chatter.input.Input;
 
+/**
+ * Represents a mouse input.
+ */
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 public class MouseInput implements Input {
 
     private String inputName;
@@ -34,10 +35,43 @@ public class MouseInput implements Input {
     private long shortDuration;
     private long longDuration;
 
+    /**
+     * Represents the direction of the mouse input.
+     */
     public enum Direction {
+        /**
+         * Represents the left direction.
+         */
         LEFT,
+
+        /**
+         * Represents the right direction.
+         */
         RIGHT,
+
+        /**
+         * Represents the up direction.
+         */
         UP,
+
+        /**
+         * Represents the down direction.
+         */
         DOWN
+    }
+
+    /**
+     * Constructs a new mouse input.
+     *
+     * @param inputName The name of the input.
+     * @param direction The direction of the input.
+     * @param shortDuration The short duration of the input.
+     * @param longDuration The long duration of the input.
+     */
+    public MouseInput(String inputName, Direction direction, long shortDuration, long longDuration) {
+        this.inputName = inputName;
+        this.direction = direction;
+        this.shortDuration = shortDuration;
+        this.longDuration = longDuration;
     }
 }

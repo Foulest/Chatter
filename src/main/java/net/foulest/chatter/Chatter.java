@@ -28,9 +28,7 @@ import com.github.twitch4j.chat.events.channel.UserStateEvent;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.win32.StdCallLibrary;
-import lombok.AccessLevel;
 import lombok.Cleanup;
-import lombok.NoArgsConstructor;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import net.foulest.chatter.input.Input;
@@ -54,11 +52,15 @@ import java.util.stream.Collectors;
  * Main class for Chatter.
  *
  * @author Foulest
- * @project Chatter
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j(topic = "Chatter")
 public final class Chatter {
+
+    /**
+     * Private constructor to prevent instantiation.
+     */
+    private Chatter() {
+    }
 
     private static Thread mouseInputThread;
     private static final Collection<InputRequest> inputQueue = new ConcurrentLinkedQueue<>();
@@ -153,8 +155,13 @@ public final class Chatter {
                 )));
     }
 
+    /**
+     * Main method for Chatter.
+     *
+     * @param args The command-line arguments.
+     */
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in, "UTF-8");
         System.out.println("\nStarting Chatter...");
 
         // Prompts the user for their desired input method.
@@ -501,7 +508,6 @@ public final class Chatter {
      * @param longInput  Whether the input is long or short.
      */
     @Synchronized
-    @SuppressWarnings("BusyWait")
     private static void startMouseInput(MouseInput mouseInput, boolean longInput) {
         // If there is an ongoing input, interrupt it
         if (mouseInputThread != null && mouseInputThread.isAlive()) {

@@ -17,7 +17,6 @@
  */
 package net.foulest.chatter.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,13 +24,28 @@ import net.foulest.chatter.input.Input;
 
 import java.util.List;
 
+/**
+ * Represents an application that Chatter can interact with.
+ */
 @Getter
 @Setter
 @ToString
-@AllArgsConstructor
 public class Application {
 
     private String name;
     private List<String> windowTitles;
     private List<Input> inputs;
+
+    /**
+     * Constructs a new application.
+     *
+     * @param name The name of the application.
+     * @param inputs The inputs of the application.
+     * @param windowTitles The window titles of the application.
+     */
+    public Application(String name, List<String> windowTitles, List<Input> inputs) {
+        this.name = name;
+        this.inputs = inputs;
+        this.windowTitles = windowTitles;
+    }
 }
