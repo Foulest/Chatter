@@ -17,13 +17,12 @@
  */
 package net.foulest.chatter.util;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import net.foulest.chatter.input.Input;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -31,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Application {
 
-    private String name;
-    private List<String> windowTitles;
-    private List<Input> inputs;
+  private String name;
+  private List<String> windowTitles;
+  private List<Input> inputs;
 }

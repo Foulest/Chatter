@@ -29,15 +29,15 @@ import net.foulest.chatter.input.Input;
 @AllArgsConstructor
 public class MouseInput implements Input {
 
-    private String inputName;
-    private Direction direction;
-    private long shortDuration;
-    private long longDuration;
+  private String inputName;
+  private Direction direction;
+  private long shortDuration;
+  private long longDuration;
 
-    public enum Direction {
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN
-    }
+  public enum Direction {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
+  }
 }

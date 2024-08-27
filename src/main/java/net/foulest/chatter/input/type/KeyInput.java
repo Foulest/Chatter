@@ -29,8 +29,8 @@ import net.foulest.chatter.input.Input;
 @AllArgsConstructor
 public class KeyInput implements Input {
 
-    private String inputName;
-    private int keyCode;
-    private long shortDuration;
-    private long longDuration;
+  private String inputName;
+  private int keyCode;
+  private long shortDuration;
+  private long longDuration;
 }

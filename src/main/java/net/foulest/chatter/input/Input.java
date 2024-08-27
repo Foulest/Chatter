@@ -19,9 +19,9 @@ package net.foulest.chatter.input;
 
 public interface Input {
 
-    String getInputName();
+  String getInputName();
 
-    long getShortDuration();
+  long getShortDuration();
 
-    long getLongDuration();
+  long getLongDuration();
 }

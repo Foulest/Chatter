@@ -26,7 +26,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class InputRequest {
 
-    private String message;
-    private Input input;
-    private long timestamp;
+  private String message;
+  private Input input;
+  private long timestamp;
 }
