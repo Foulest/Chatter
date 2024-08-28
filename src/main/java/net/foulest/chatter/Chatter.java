@@ -484,6 +484,7 @@ public final class Chatter {
                     if (Thread.interrupted()) {
                         break;
                     }
+
                     Thread.yield();
                 }
 
@@ -597,6 +598,7 @@ public final class Chatter {
      *
      * @return The title of the current foreground window.
      */
+    @SuppressWarnings("CheckForOutOfMemoryOnLargeArrayAllocation")
     private static @Nullable String getForegroundWindowTitle() {
         WinDef.HWND hwnd = MyUser32.INSTANCE.getForegroundWindow();
 
