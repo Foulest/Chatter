@@ -5,10 +5,14 @@ plugins {
 
 group = 'net.foulest'
 version = '1.1.1'
-description = project.name
+description = 'Chatter'
 
-compileJava.options.encoding = 'UTF-8'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+// Set the project's language level
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
 
 repositories {
     // Maven repositories
@@ -57,6 +61,7 @@ dependencies {
 tasks {
     compileJava {
         dependsOn(clean)
+        options.encoding = 'UTF-8'
     }
 
     tasks.register('sourceJar', Jar) {
@@ -67,8 +72,8 @@ tasks {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            groupId = 'net.foulest.chatter' as Publication
-            artifactId = project.name as Publication
+            groupId = 'net.foulest.chatter'
+            artifactId = project.name
             version = project.version
 
             from components.java
