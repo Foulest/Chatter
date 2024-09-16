@@ -46,7 +46,7 @@ dependencies {
 
     // JNA platform - for interacting with native libraries
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.15.0'
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
