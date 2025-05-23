@@ -3,6 +3,8 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CodeQL](https://github.com/Foulest/Chatter/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/Chatter/actions/workflows/github-code-scanning/codeql)
 
+> **Note:** Support for this project has been officially dropped as of May 23, 2025.
+
 **Chatter** is a Twitch chat utility that translates chat messages into key presses.
 
 ## Usage
